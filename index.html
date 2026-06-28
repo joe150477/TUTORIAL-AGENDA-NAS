@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NAS · Agenda Escolar — Tutorial para padres</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--navy:#172E50;--navy-dk:#0F1F3A;--gold:#C9A24B;--ink:#1d1d1f;--ink2:#52525b}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;background:linear-gradient(135deg,var(--navy),var(--navy-dk));color:#fff;overflow:hidden;-webkit-font-smoothing:antialiased}
+.app{height:100dvh;display:flex;flex-direction:column;max-width:520px;margin:0 auto;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 8px;flex-shrink:0;gap:8px}
+.step-label{font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.04em;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.controls{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.voice-sel{background:rgba(255,255,255,.12);color:#fff;border:none;padding:7px 8px;border-radius:18px;font-size:11.5px;font-family:inherit;cursor:pointer;max-width:140px;font-weight:600;appearance:none;-webkit-appearance:none}
+.voice-sel option{background:#1a1a2e;color:#fff}
+.btn-mini{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-mini.active{background:var(--gold);color:var(--navy-dk)}
+.progress{height:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;margin:0 4px 10px;flex-shrink:0}
+.progress-f{height:100%;background:linear-gradient(90deg,var(--gold),#38bdf8);border-radius:2px;transition:width .4s ease}
+.now-speaking{display:none;align-items:center;gap:6px;padding:5px 11px;background:rgba(201,162,75,.18);border-radius:99px;font-size:11px;color:var(--gold);font-weight:600;margin:0 auto 8px;width:fit-content;flex-shrink:0}
+.now-speaking.show{display:flex}
+.now-speaking::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:6px 0;min-height:0}
+.slide-title{font-size:22px;font-weight:700;text-align:center;line-height:1.22;margin:0 8px 4px;text-shadow:0 1px 8px rgba(0,0,0,.2)}
+.slide-title b{color:var(--gold)}
+.slide-sub{font-size:13.5px;text-align:center;color:rgba(255,255,255,.85);line-height:1.5;margin:0 16px 16px;max-width:420px}
+.slide-sub b{color:#fff;font-weight:600}
+.mockup{background:#fff;border-radius:24px;width:100%;max-width:380px;min-height:440px;box-shadow:0 12px 40px rgba(0,0,0,.4);overflow:hidden;color:var(--ink);display:flex;flex-direction:column;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.m-shield-bg{background-image:url("data:image/webp;base64,UklGRlgaAABXRUJQVlA4TEsaAAAvT4AQEA04bNtGkmx5X3iv/4IzczVE9H8CnqNF01pbbetR2wupidXmrbHNQI/hPGghXVgy7++F4hOEhyA3XPCBtvDd2MxhW9TbFtvY/osFi+cDYiAbOACuA5QErFU5/sCiXlfZ+DiSkTV4HPbrRBvsQzqOIwnJtXE0YzMGjhNJcqQ8YYD037Y14EQzDEPRFP3rORfcOLbtJkOmQi4pvf9FsIacbMKTRc65QshVJEmKlcf4mP+efzVPAK2CF8zU/wmA/gU+8Pfti/tD1zvT0vO71vYcWL/I4vdvmsHFcPpUpPRT8PrdpT2gdMHRp9v3vC0HZynXO8kh00OHAAEOjreZxB1NgNWZDr5VlcGhpvl8HnTu574zynLPyRo257tfQ4IppnEt+7lfqMzLNNhR4d0kcMGf6AMeBkh05Xe+v9UkJrAI5DcY4Nvhp+NU6xRUmKwjQ7fVtqYKNoXWKd0Ex/zna1+svYxqHeNYC7qpIJFPlSHLxr8c52Jti9zXHpYQkg4YcrCAB/cL98vVTeub15+MEnosFQXpJ5qHcABAoB1EdaoNuPFt5fEVd4dwCLD8eYN9Qrz7cbxMvzyWKOFv1tE5QK8GxW3bONL+Ywft6jsiJoCiDKrWLBYs/xMVFpHRDCy1lG3bIttOHZwxMzOHmZmxT5iZmaFWmJmZqVaYD9YZhZmZmZmTGlD3XgpeO1vA8rNkRNx/tYzlJR5+CVvK0RQ9W1JbyPQf/SKWrUy3i1IQMlZCjpgaZ/TIOFJiIQL2KFQGtsNPRzwcD0eC7Mi2Vavq6+56HNdPEthJnHiAuJxM4Lm7K9xq25Yn1xdPcHctOXRZIC0D0DNKmIOaytng66jS4e7ubv9Brrbdpu18Y4y5eBSblTrbXa7AdeqUtu7ATkp3NionpW1ba84xAVa0/18k2/n/q7p7unvozJzhOcwQZmZmZnDJFphU4qKimZmZmZkuMw1DY8H/v41fOL2BUG8hKM8eji1Z4aRsZOtjwzmriMrzjL52VECWbhlb+wiu40ReBhtOxp4nS5hVxN5sAO2xY48NJ791hMGTvTYy17ZtGxtbK8gqIu8KGOyNjWyb46LwyLuCbIGZGUbHctL6yjDYPHFXB+zdR9t7t1A2NjZruKsIg2SaJy6Wcm3brmNl73OueUYqPaks7vvWJwjaBEMAtH6bQYsMGMRAAoRAz3sP5WWedJ/uOZ4j21Zt27atlHOprfW+mJnjS4i1hFiqrBVeCixFlhIQWgrgZmaY2GcfvdVashzbtlRbmXXqCW65axsYNIM+0QYiix1CQtfIJXR3v6+qTiSIygWyES4XVEsBUlCBkpCCMmwH5Ju4dgjkQrca5R8mOh0drSz88fBr0UXA/eb1m0f3Vs5XQM/ZUO59r7kgMUhuHtUxRMm9m3AWmiDJBZHgEl7MFCQhObdBG4HkJAUhn2I5VYFBTvZGymNphQ9RHLvS+glK+OyPwuBv97/WfnH19vjkPMOd8hmGtE+Mi7PnH566HCwvH9vrYaqCPMQsIyRo7P/2LvKIWfsnA2vBANNyiqiDQZJSVEEfIgsKTsEtzUzWZ/rrRSCn87voVKjlkBA+W/+b+ZPO7fYvLo+/vGmjwLWzRfbt36X9f/PiOHPA1Z9j21d/t5nmIs927r15drX4CYp9IamQLFUvAhSEbgD6DoMI5ARdiEa0veEkzeHSkqQgSeFNZEuwaP00D7IBvvuhufOvai8Lvje6uPDh6IAXFPtcIXpg7/ZLPOQ7v9i7D6765gEzAGluHnb/xT/KXbNj5nfXOL7Y+nxCfLTnuP7T9MS/QWYu5GLW90AHRrUhR4IDzCS55ZnuR5KEV5C0YW0haFuIWQfx+9ITfth/2/zV5dvrt2Zp5v6+cI4NvmevOZ6p0uU1OJdCEYxWuGgiGjWE4qZRGerQOewJdavvyVDsfGW75xq34/XX4xKQlUIaZEP829qBskUwMDOIQeWghrgPE/4E8BW/Y37evFn/vdHp7Q9HCVneyjXiVQ7qvcQDG+3x/Lq5sm6uqQNgACXGvxfzAcEJggqnUIdk0gIy0GkUn3dsblll83FXOo3vx0cHR145upv9tPejnYCsnAtPO5H3TYBIWZKCqn1JEunzcsv3fU78Ve1u1benp9c/Eh/6G/I9bpeecs7xoR9a+Wou+OvNr/j+hWtVu7lOtYNra+ealQ6AQzb7DBcuF5UT6rYtPEXOQpO5BBTNzRx8OHLwKfX+W3u8eGeDN+TbL09cH+09dnI398Xf9AWIGIABGUXXoLHjGJPy0Mbs8L3+vY74Sed657enpw8+tT7g+HyPe2SnnHf6xn6NQnPU9+500Xe/XPXNG7f5ts91395w7f+dXEc71650cu1KB+GKTb8r8/nVgr89a6CitolZ17Guxb1ZXAqh0AoJaI3kEb864tk7IV49uuFB2zu8cGeDV+W7346Nj04fNz9f9frO07T3ftCZcqQ80MCVkPAqVJXPju4PfnF65G/d2OJiaOcpuOBY2bB29457lE9EKeBT1LZNUBC1fv2m3HZ5XqiL4FYUhHSY5RY1VdpbuWpEpLGACpKEQiGMYGLEW9eUcBjakjI0G929uF9qF/+pI9t7hseb7y+Si5/eC/ee9u9pln4HXUVtqewlL8nxrcnpnQfmh+zVD/8K1hX5+y3K946SKj4sVEU2VK1aJECO5upRl6y9vylT4QHB0IZ05stSLYM7mipRg9YvDGfK0kUQxCNq4hahFCaiAiFvXogoonpEIe1hZrC7juj8Yb7yTfrfFp2k+xdqeikls0hlBGtUm5WMn7ZPr95jeeMX/DwcRx+o3BeTIZB7AA3mRlvgfwyKEQJagGKAarSkJnQypywjLsMFhBssMouisltwFMklea8RA+auEjKIsDyJPS5wxrCb+665JSxiQiFtlB3eZHXzv2n/WsV/jcyFfm1VbcnVmRdfn5/eTNc3XPrTQBJ9UhAEYhMHIQRG006GrUx0qTqxqmFTBAvNr+QA6c1rAioX+0u8FZEQ1ES1YexY3FxUBCVQGP6vhbLZfZurxYLYbOscp6xD4JcbvzcFsooZomwuxcbINrU0ehq5WTMrUS7JAR4w6RxKk0DAzJrEpa08zQWTVc51DbKNtoTADkKFX0ogoGB9M2LEFqc4X2+zHSBNrSoaY0vg+b5+D6m2ywsZ/kTmjWj46XXRCBWghJbJAMSlAxXSY4UxZp0kOeaREQ6MqtyhJTJAPUzo42aFyfJ6NNzFuAVkwF/AGQVACLHiTkaMSLHTfDis7toQbgSNzeZESYu6DQ4pcqJdYRupcNxCQAhENtFldqloqigIkIoZtVbFGZLZUMLNE0Y0HlTMzGV0TcOsmUgwSivChSXYo6lioikiwmh5Nc51tZllVc45oFVD9RAgrjRxg0nQlCkq/i/+WykYgxC5XA5MSBg5T2CVuCm5WTQwomFg/mSSBIZT+Wlk57Eh4Ea1HHIXTdMSCVAhqmGaUmXuaxTuWkyAcY2He0zOZxMfhiaWoltTgz3cE5fJNoO8uZ0iIzakIkARiyECIkfIE/TT30U+pT6CSVJr8LcOnJSY0z3jsxqqLLoJUgQIJLIIsqOyNf/qMeLiCyIGzJjwSkkH1cpieceN+7935Ii0kMd6z2JoSYZIhF04wkPYAFkbEBHzATglgmoBSn0LncXoNiKpEGTcB18XgT1jFRtRIEkISAJ1Y/kmqAdOs2xbhVExLmIZaRoW7kgYGarGHKg5gJaJL84QD0xpIAvCrCWMCF3/t0ZWGgaIZtg/DoXDVJtDfkXjYOLWuJECoAMAZrwsUyZSxmLdz4pAOJZ1EVMaYaSJQGJjChONVAyg7y5Z1EBHpNYreJpa3ratq3ClWCIaHYNthJ/xCeT3B39DcFsN7CwC6K/on+FdPhQGeqhAdaleWu0zDLpYggjJNhSBYFiCo6GgtJPBF6i4mIg2VjdoaD0rDz25h4SDWqRXh8maKPp/TOz19XTpQZUkOBhLmoO/A/2AtVO6fENF8EkQemFzUmwbVSCtuNU9SjjC6xsB0jVRbeXCGptud7NV8WEXBzRiG0ciBk5FbaarezJuamDm+t6EnZ5PddokP8AqjzF+qRpr9wxGZr1YmQ5Uxwi2TvavYaB9I2XHSk7nlaFQtfH4JoPSc8bQOEKPuwRFyWRY3gHuI0RBOrlS3LOX0wHyToQgiFO5mKGqRAUXABpx4itFiWLr5gfHzGX4GU7y5M+2mExK/8NqMcDmaH6nPjU5ZdNjaV0bIUbMSsi7xbdQQ98Zttiv+ZEb/U/nVKLzC2/TahYhQQRAtw0wPWIRk4Xul+GUIS8jdIQtH2GoRIFgoEh9jaatUApqoAD+jC2f3xxoeM/28JR5KNEC1PS0LYUBRqXQDX0LWAQwvAuin0K0tqf/kI3iZwS2IrFwUiLRPKK6FSVIaoINiBRCDP2mpbBHCx4RYjys/AIuSlBQG1G0PBQ1oBNSDEAzbNjMHMffTuTPF82ZoXi4/Vk5Tbu3wWT+/t+r6ByJi38CaA2iidawAuszCmhz2lZIz9h28W2NcC67OVM6N9Y5jFrwYMxEpAAawNAk2KDBLn4UnxX5cFMK8Z8Nwh6zwEZDzrMcqifjDRiDqRg65sVD31hIsJSibSnEoKJ1YFoBfHVsuv0pi1MbrDWwASIJ2GDA0BtY3yb/6RnwaXMxqRAWRkUUiBxitwOkxXDKPxZ2CEb7lZVc2h/C20rgwcoQJQM8lFknDBpjqsDhwkeEXPoDUizZTpXiAWbZb4ryZrMDmiyiW0hH9DICnZXbKvnU/y/mVB0MBkQADVhHxDozbLpGl91TTIFTDag1KwooSlggRTuk1k+qCRqWwDRkjLBbv9YWPpq7tDyRwllTsy28RonB3UqdF/daWiCFtdBYCCTOECvV7c+qpqWiP3gBdRRPOcsamKYQUdcvOJXWzDAwavv8/qiiPH0aecRyqp+54PoY5in3zD99qHFx1Qw5+T9SfZAt3z4jNN+06IGUEwHYwEsraWXBMoiAyJAh/y9JJSgIK1wOIkMwFsHEHQ/hKOvAeoMyZLZiHkadoviiuLrDvZPJzj7ZK677OEoY2gKjNuJVaT5IFsGWuSLNgMQcN5DX4jOZjIRtvYyAFkuReAhxYtPZt53F1BC7e/Ib5x82s9bBXSdFjcF4vBPVg1jOXsS9IYlLY3piAw/hFpBylgF9UpwJs0OC8R0xOq3TpM0ShNVP5a6BN12zUMuf03GDu/XaiNg9fZ1Y2lEc/uU9rUlc9+hxnOmpXxmIq1AUw0pldO7yeSfmq8Q0BTRxIKamDTxu0SBqmhY0kTjJyTgEETRMInYYqWQ6pUswCvToYOsGgoa6kUTQMaekheriMYRAGpKfnIDVUKequ8v3HOrF90QodFUkaU9HB510ykhZk61UOmk5DkM4Vve9nZRlxS1EdDKLFcqlNQsq2SvYVYNokk6hQnK/Bb8nLw4czcQtxL1ngmYvf0cLATGJjoa6RijYnUIrnbJivXbK0jBmrDDj7DyJUqKoAl/x6mPgS3jVJ/9JIk+ZXWjzrNN887FqELLbYpQCum1ogOjYf0FETIK2CoKhGZBO6joaALr5hIY/PlDionjmkKgwRtmpGi8JkLB4INW+GeShOiALd0wZdkdMR8PqXgXTNoU4VreGRoeNvaaRxA7bMCOGwmpfVlz/YFc1GQMvLddUrtdlUbN/rnqoLMwgoXShm9DR0K5vWS6iJ0a82akg4QZEohsREHoigOTITruWCPRmHSYwDFWo8G4Yo+ybQWBEmCsQMzHDj6H0WMIaTsO0vCaTVBTV/YWoIlLqx6mlBHUA8rxs9fSsZjHILiYkktApx2EIdjupGyFJG6Y5iZYKQZDMAAN0LzyDXZR9AhI1thFJ63XZk2aCi2B4gc36xTYxJE5qOOn/C8TXL778qz0vhws5TnOLitshbQZ12eYy9v9Khjy9CiVMQ5hibrjFgu1oRN/azRNbPjGiFM/uhM8urAxOQNkJSEQmMpOEV3m9LjB9McfJBVxO8x4OPB9UMVXlKCNCEMOc6+OvFL+L2cudAVtUPfyJCsTFHFte3JkzPzJsBu9iuj7oPSGiPu5K0C42lBNrlD4WyjJs1naU0NZexTXAjBp6gkrGCWoIMKfE0EB3QdHNU3b4BFKM8UVaVbyffEE1MV3V2rW4XQosmqMIkAgxvkHr7IELT0uZ2pAVIhppPcUV59fdHu4uNs/iKhi0Nk4JtcOWl03gpBBGMql5p6yFj6i4pJnq8RKqLpDlmTRf0kUlHWk6TucGJLRG4jC4alTkGwJmzxNhgbRR0F6V7CJiUsLW4mOnb3FehwsyNoH2sJAhuGBX55K3eGxuDG2Pm0qcvPYdLi7hDQQRG6Zzl4jaoq912ZJiCYpzdc2dlqUMBU+ldFsc0W2pCB/QeI3jjCKzSLRFMATKFApFZTgEklm5NB7K+3vOjGcschgkWA1RNmthxF8MYYpRZ8Oo5qoN7VpjBhl8BldrMtFvPBHddILmYB7VIKMezEKFU4JX+BotXYvsQP5KFEqZlN6/IHasIrqUTZuL/mcnrdP6EbGFzJpZplGCAAJaIGCLejHL/DD/+KLm9TAf2xWGti2cY5rmNZBuKP0sxByKICTN014MX92Ud3Zn0aBpiVgUWi+4MjVtxGGeTBJBE8ywD+P3I63Xma9G0VJOmhOaMcm3l9Ndy8v+GZWyAOxTAkSPi3HZYnxoPrXN7u3+ITNZZEA0/wkkCIUwKYoO4RR1nyIUv9SOYV0BN0JcvMNmExMSAopwZDKeppYDOUHymiiR1RDVam4WpsmUoXU6FkN41xtXLqVJVJYWLzXhEAIyYZGRUtzdBZW23e5CllafpmZKMWRQj1AWLkJUXFEIF7EgclfmHVEvG5HGdVNy9jdRNmCER/EXlfkBKwVqCaIC0WSZwhqQMN6Ue+Gh0yAOgwk2zvzg0QrLywuDBA1ERaJQmhSGrftw7uG+w1Uc9VAsOcu++5cMlTYkg/SQRbzJtjVf2mJzuXi9+PeQ9zHgMN0iL19EcuPEpP5hRDxAfYRRKYAFTdogFzOImp/XgKT5KnYnhYgiXv1w4sJcZj6/MIN6eziV4fclihFxOmO8U3b9hpq710370Dx7bLNHf5F+swhoSBK7mV+cK0IuJRLK7YLt2X4ppbGFfSeJcATXzoENEZT8VcY3n8EAURMlwSWMjACLWF0rq6NUNndxGYfHw2aa/xkbMbKblrdVlriqqMgoA7y2kGA76e5Ii/9Tykl+3b1UgEzxrnc7OJWlttQO/bNttJv5E+0zqfIyJEq5ym7l7NAf/sPsl0+5yP0bvBU/LGjuRk03sxW6fxR894q8ISLQhAa1cC2tHS/NDt/fIrqlNe2pOIoTmlM58kbK+5jlr+LexGJoP2TTr3/lbL++rnR83phXvzOfB92fzPPd67wH4UTv5l8/1NA9FgXyAtSHl8zx00f4XIrfaoNOpSwMJSgs4uwjLvb3jq/NPy3BgM2CfO7OFjeJHpeSipmaezX0VWp55Opm61P3tnHP3a3gYTnp3xZU6Ss6Sid1QSPR4tOP/W6taArlvYUi+RATmoF2YB2dEEUwzxHttHBsLDYeTLHiLlJQzTfBJsm5TSHuv3nw81bdUt8EKdAxJjrYdYb5Ic/cPPi3nQtKW6j8aOXUmLfJsVUoBIkDCUUBVEJgWKtMFgiBYt/WsgCsPhfBYJuotEzOFCHtQbaPUy/uE7dOb7ZwGquOU3nQ4nHT1k5ciy9OPYjCPFidEknb5A5I4QzHId507kLEcpo+dQKjAXT1TdU5gnhM6pMQ5XmM3bniXJf9Le2W+ianbFgAYoR+76KrdDUcqeMS3qW4bOJViBum0ikA6uia2IloZxfTdBsQwARAChNcuh7abE9iEb+O8ppt7Ys+nJxLh5kTLcj0TpgLkaGqgwVge4MfXaoUdGbGOcAcFmrUREsYGhCGltSSi4ENAPqUri7RoVQ0e2fN2ELtfiihhTrCKD5trnjsUaPWXp9ilJkM0WUAmDD9JVoSAEC3QQM9q4MGU7IEFqjmseaH9wjWjvUR3ELRuC8+LyCmfQt1UVC6VAeTcBzErAmJDtAhCQCabtzRzOiUwQCT0jy2I9S2M49ZO+7zHxIW9C//hjrMxQsXV0jKGjiBWHM4SwYgrSEg6BldtwFMAYh7BAVcQgGqW/ZqrI2BhbQrIlbzJQK6O9zCl2+pIlKcYME4bAUdUoiLmWBCBwAAhUSJ/ECW61EUjyj9KRpWMICbFFoqdQkpNNCLw5QD4/4xgPXRH1p5S6qxbUBp90aAtJbR9L4cgA6mCvv6wOQsao7ZgpSw+cV+hz//gJUpaNIJrnWlcbf3JYA8vvooKHmscKroqd42Q0L79ucQUhRIawCZX6EpON7kjTGm1XA1Nwsjf6LH7SkT2zO+rvsDDVbB2PgSfyA9r9qN1qU1d9sI8W6baS7WbWh4JmUBgA2oZXKcgFVkMSmVEV79oOqjfXWY8MVm4cnG3+uvJRK+ESZlI1DZ0WTDKnChgtNWc/1BcdJNkszde21jMJj1ixlywk0Ej8V0yJk904NRKqjcqiXd7VE+3M2kH8geP+pm/J4ueBvxqpypqRuDCnypGuB07vBkoL7uPLusOcyf5YgRpBYk+sMVEwFirpNqR6h55dYn+qC4ZnMMy/zK7eRH47G7dbe/649OEpI2uCoEGjNDBWqKK8UCXQG5vnw6yDofjKsPhIx6dY6C061LJKMVAYTarNz6Je0A709NwzJHy4uonU+dyP9zQ6PA7rchBufkvXMKqvQan3/K+0bVAZL/NN1QwVVGxlw3uzl2641/7ryB60/zXFh9vEU9pKfOcjwyz3HtwufLJg/rnvxRF6K8giS5ZS9JDklIopmXkIRv4mYS2DCMzAUSKbnOsDT9enH60K02/Z3bS7h/lud6hWeXT7LL7yUMSAThAkEGqKGTgibuNe5yIUgFMCKMSgFu3C+OHq0yB66YFFY9TlsP+K+B1/h+DAA=");background-size:contain;background-repeat:no-repeat;background-position:center}
+.m-shield-xl{width:160px;height:192px;margin:auto}
+.m-shield-lg{width:110px;height:132px;margin:0 auto 14px}
+.m-shield-sm{width:38px;height:46px;flex-shrink:0}
+.m-splash{background:linear-gradient(135deg,var(--navy),var(--navy-dk));color:#fff;padding:36px 18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:24px;text-align:center}
+.m-splash-title{font-size:22px;font-weight:700;margin-top:26px}
+.m-splash-title b{color:var(--gold)}
+.m-splash-sub{font-size:14px;opacity:.78;margin-top:8px}
+.m-outro-tag{font-size:15px;color:var(--gold);font-style:italic;margin-top:18px;line-height:1.4}
+.m-screen{flex:1;display:flex;flex-direction:column;background:#fff}
+.m-band{background:linear-gradient(135deg,var(--navy),var(--navy-dk));color:#fff;padding:18px 14px;display:flex;align-items:center;gap:10px}
+.m-bt{font-size:15px;font-weight:700}
+.m-bt b{color:var(--gold)}
+.m-tabs{display:flex;background:#f4f4f5;border-radius:12px;padding:4px;margin:18px 18px 14px}
+.m-tab{flex:1;text-align:center;padding:9px;font-size:12.5px;font-weight:600;color:#888;border-radius:8px}
+.m-tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.m-label{font-size:11.5px;color:#666;font-weight:500;margin:0 18px 5px}
+.m-input{background:#fff;border:1px solid #ddd;border-radius:10px;padding:11px 13px;margin:0 18px 15px;font-family:monospace;font-size:14px;color:var(--ink)}
+.m-btn{background:var(--navy);color:#fff;text-align:center;padding:13px;border-radius:10px;margin:0 18px 18px;font-size:14px;font-weight:600}
+.m-cal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#e5e5e5}
+.m-cell{background:#fff;min-height:60px;padding:5px;font-size:10px;display:flex;flex-direction:column;gap:2px}
+.m-cell.sel{background:#FFFBEB}
+.m-dn{font-size:12px;font-weight:600;color:var(--ink)}
+.m-today{background:#d72c2e;color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.m-pill{color:#fff;font-size:8.5px;font-weight:700;padding:2px 4px;border-radius:3px;letter-spacing:.02em;text-transform:uppercase}
+.m-day-h{padding:16px 18px;font-size:17px;font-weight:700;color:var(--navy);border-bottom:1px solid #eee}
+.m-class{margin:10px 18px;border-radius:11px;padding:12px 13px;border-left:4px solid;background:#EAF2FB}
+.m-class.blue{border-color:#185FA5;background:#EAF2FB}
+.m-class.red{border-color:#A32D2D;background:#FBEAEA}
+.m-class.green{border-color:#3B6D11;background:#ECF5DE}
+.m-cs{font-size:12.5px;font-weight:800;letter-spacing:.02em}
+.m-class.blue .m-cs{color:#185FA5}
+.m-class.red .m-cs{color:#A32D2D}
+.m-class.green .m-cs{color:#3B6D11}
+.m-ct{font-size:12.5px;color:var(--ink);margin-top:3px}
+.m-check{display:inline-block;font-size:11.5px;padding:4px 10px;border-radius:99px;margin-top:8px;font-weight:600}
+.m-check.done{background:#185FA5;color:#fff}
+.m-class.red .m-check.done{background:#A32D2D}
+.m-ruta-t{padding:18px 18px 4px;font-size:14px;font-weight:700;color:var(--navy)}
+.m-ruta-c{margin:0 18px;font-size:24px;font-weight:800;color:var(--navy)}
+.m-bar{height:6px;background:rgba(0,0,0,.06);border-radius:99px;margin:7px 18px;overflow:hidden}
+.m-bar-f{height:100%;width:60%;background:linear-gradient(90deg,var(--gold),#38bdf8,#22c55e);border-radius:99px}
+.m-msg{font-size:11.5px;color:#666;margin:6px 18px 10px;font-weight:500}
+.m-news{padding:20px 18px;background:#fff;border-radius:24px;flex:1;display:flex;flex-direction:column}
+.m-news-h{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px}
+.m-news-card{background:#FFF7ED;border-left:5px solid #D97706;padding:14px;border-radius:10px;margin-bottom:16px}
+.m-news-type{font-size:10px;font-weight:700;color:#78350F;letter-spacing:.04em;text-transform:uppercase;background:#fff;display:inline-block;padding:2px 7px;border-radius:4px;margin-bottom:7px}
+.m-news-title{font-size:15px;font-weight:700;color:var(--navy);line-height:1.22}
+.m-news-body{font-size:12.5px;color:var(--ink);margin-top:6px;line-height:1.45}
+.m-news-btn{background:var(--navy);color:#fff;text-align:center;padding:12px;border-radius:12px;font-size:13.5px;font-weight:600;margin-top:auto}
+.m-chip{margin:14px 18px;display:inline-flex;align-items:center;gap:6px;background:rgba(0,122,255,.12);border:1px solid rgba(0,122,255,.25);color:#1f4d8a;padding:7px 12px;border-radius:99px;font-size:12.5px;font-weight:700}
+.m-badge{background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:4px}
+.m-menu{margin:12px 18px;background:#fff;border-radius:14px;box-shadow:0 6px 22px rgba(0,0,0,.13);padding:5px}
+.m-mi{padding:10px 12px;font-size:13.5px;color:var(--ink);font-weight:600;border-radius:8px}
+.m-mi.active{background:rgba(0,122,255,.08)}
+.m-mi.add{background:rgba(0,122,255,.06);border:1px dashed rgba(0,122,255,.4);color:#185FA5;text-align:center;margin-top:6px}
+.m-install{padding:26px 20px;background:#fff;border-radius:24px;flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center}
+.m-install-row{display:flex;gap:14px;align-items:center;padding:14px;background:#f4f4f5;border-radius:13px}
+.m-install-icon{font-size:38px}
+.m-install-t{font-size:14.5px;font-weight:700;color:var(--navy)}
+.m-install-s{font-size:12.5px;color:#666;margin-top:4px;line-height:1.4}
+.m-install-foot{font-size:12px;color:#888;text-align:center;font-style:italic}
+.m-support{padding:42px 22px;background:#fff;border-radius:24px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.m-support-icon{font-size:68px}
+.m-support-t{font-size:15px;font-weight:600;color:var(--ink2);margin-top:10px}
+.m-support-p{font-size:26px;font-weight:800;color:var(--navy);font-family:monospace;letter-spacing:.5px}
+.m-support-s{font-size:13px;color:#666;margin-top:8px}
+.nav{padding:16px 4px 4px;display:flex;gap:10px;flex-shrink:0}
+.nav-btn{flex:1;padding:14px;border-radius:14px;border:none;font-size:15.5px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s,opacity .15s}
+.nav-btn:active{transform:scale(.96)}
+.nav-btn.prev{background:rgba(255,255,255,.12);color:#fff}
+.nav-btn.prev:disabled{opacity:.35}
+.nav-btn.next{background:var(--gold);color:var(--navy-dk);box-shadow:0 4px 14px rgba(201,162,75,.32)}
+.nav-btn.restart{background:rgba(255,255,255,.18);color:#fff;box-shadow:none}
+.dots{display:flex;gap:5px;justify-content:center;padding:4px 0 4px;flex-shrink:0}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25)}
+.dot.active{background:var(--gold);width:20px;border-radius:3px}
+.dot.done{background:rgba(255,255,255,.5)}
+.start-splash{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,var(--navy),var(--navy-dk));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;cursor:pointer}
+.start-splash.hidden{opacity:0;pointer-events:none;transition:opacity .4s ease}
+.splash-shield{width:170px;height:204px;margin-bottom:28px;filter:drop-shadow(0 6px 24px rgba(0,0,0,.3))}
+.splash-title{font-size:30px;font-weight:700;color:#fff;line-height:1.15;margin-bottom:8px}
+.splash-title b{color:var(--gold)}
+.splash-sub{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:42px}
+.start-btn{background:var(--gold);color:var(--navy-dk);border:none;padding:18px 36px;border-radius:14px;font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 8px 28px rgba(201,162,75,.45);transition:transform .15s ease;min-width:240px;animation:btnPulse 2s infinite}
+.start-btn:active{transform:scale(.96)}
+@keyframes btnPulse{0%,100%{box-shadow:0 8px 28px rgba(201,162,75,.45)}50%{box-shadow:0 8px 36px rgba(201,162,75,.7)}}
+.splash-hint{margin-top:36px;font-size:12.5px;color:rgba(255,255,255,.55);font-style:italic;max-width:280px;line-height:1.4}
+@media(max-height:680px){.slide-title{font-size:18px;margin-bottom:3px}.slide-sub{font-size:12.5px;margin-bottom:10px}.mockup{min-height:340px}.m-shield-xl{width:130px;height:156px}.m-shield-lg{width:90px;height:108px}}
+@media(max-width:380px){.slide-title{font-size:19px}.mockup{max-width:320px;min-height:380px}}
+</style></head><body>
+<div id="start-splash" class="start-splash">
+  <div class="splash-shield m-shield-bg"></div>
+  <div class="splash-title"><b>NAS</b> · Agenda Escolar</div>
+  <div class="splash-sub">Tutorial para padres con voz · 2 minutos</div>
+  <button id="start-btn" class="start-btn">▶ Comenzar tutorial</button>
+  <div class="splash-hint">Sube el volumen de tu celular para escuchar la voz</div>
+</div>
+<div class="app">
+  <div class="topbar">
+    <div class="step-label" id="step-label">Toca Comenzar para iniciar</div>
+    <div class="controls">
+      <select class="voice-sel" id="voice-sel" title="Voz"></select>
+      <button class="btn-mini active" id="btn-voice">🔊</button>
+      <button class="btn-mini" id="btn-restart">↺</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-f" id="progress-f"></div></div>
+  <div class="now-speaking" id="now-speaking">Hablando…</div>
+  <div class="stage" id="stage"></div>
+  <div class="dots" id="dots"></div>
+  <div class="nav">
+    <button class="nav-btn prev" id="btn-prev" disabled>← Anterior</button>
+    <button class="nav-btn next" id="btn-next">Siguiente →</button>
+  </div>
+</div>
+<script>
+const SLIDES = [{"step": "Bienvenida", "title": "Aprende a usar la <b>NAS \u00b7 Agenda Escolar</b>", "subtitle": "10 pasos r\u00e1pidos, con narraci\u00f3n por voz", "kind": "splash"}, {"step": "Paso 1 \u00b7 C\u00f3mo entrar", "title": "Pega tu <b>c\u00f3digo personal</b>", "subtitle": "Pesta\u00f1a <b>Padre \u00b7 Parent</b> \u2192 tu c\u00f3digo \u2192 Entrar.<br>El celular lo recordar\u00e1 para siempre.", "kind": "login"}, {"step": "Paso 2 \u00b7 El calendario", "title": "Cada color es una <b>materia</b>", "subtitle": "Los cuadritos de colores te dicen qu\u00e9 hay cada d\u00eda.<br>El d\u00eda de <b>hoy</b> se marca en rojo.", "kind": "calendar"}, {"step": "Paso 3 \u00b7 Toca el d\u00eda", "title": "Mira el <b>detalle del d\u00eda</b>", "subtitle": "Todas las clases, tareas y temas aparecen aqu\u00ed.<br>Desliza hacia abajo para ver todo.", "kind": "day"}, {"step": "Paso 4 \u00b7 Ruta del Conocimiento", "title": "Marca lo que ya <b>entendiste</b>", "subtitle": "Tu hijo y t\u00fa van marcando juntos.<br>Una barra de progreso celebra los logros.", "kind": "ruta"}, {"step": "Paso 5 \u00b7 Novedades", "title": "Anuncios del <b>colegio</b>", "subtitle": "Avisos, eventos y felicitaciones<br>aparecen al abrir el d\u00eda.", "kind": "news"}, {"step": "Paso 6 \u00b7 Varios hijos", "title": "Cambia con <b>un toque</b>", "subtitle": "Toca el nombre arriba \u2192 Agregar otro hijo.<br>Pega su c\u00f3digo y listo.", "kind": "switcher"}, {"step": "Paso 7 \u00b7 Instalar como app", "title": "Ponla en tu <b>pantalla de inicio</b>", "subtitle": "<b>iPhone:</b> Safari \u2192 Compartir \u2192 A\u00f1adir a inicio<br><b>Android:</b> Chrome \u2192 Men\u00fa \u2192 Instalar app", "kind": "install"}, {"step": "Paso 8 \u00b7 Si necesitas ayuda", "title": "Escr\u00edbenos por <b>WhatsApp</b>", "subtitle": "El n\u00famero est\u00e1 en tu comunicado.<br>Estamos para acompa\u00f1arte.", "kind": "support"}, {"step": "\u00a1Listo!", "title": "Ya sabes <b>usarla</b> \u2728", "subtitle": "Gracias por acompa\u00f1ar el d\u00eda a d\u00eda<br>acad\u00e9mico de tus hijos.", "kind": "outro"}];
+const NARRATIONS = ["\u00a1Hola! Bienvenidos a la NAS Agenda Escolar. En menos de 2 minutos, les explico paso a paso c\u00f3mo usarla. Para avanzar, toquen el bot\u00f3n Siguiente abajo a la derecha.", "Paso 1. Abran el enlace que les enviamos por correo. Ver\u00e1n una pantalla con el escudo del colegio. Aseg\u00farense de estar en la pesta\u00f1a Padre. Peguen el c\u00f3digo de su hijo y toquen Entrar. Solo lo hacen una vez: el celular lo recordar\u00e1.", "Paso 2. Una vez dentro, ven el calendario del mes. Los d\u00edas que tienen clases muestran cuadritos de colores: cada color es una materia distinta. El d\u00eda de hoy aparece marcado en rojo.", "Paso 3. Toquen cualquier d\u00eda para ver qu\u00e9 hay ese d\u00eda. Aparecer\u00e1 una pantalla con todas las clases, las tareas, los temas y las novedades. Pueden bajar para ver todo.", "Paso 4. Aqu\u00ed est\u00e1 la Ruta del Conocimiento. Su hijo y ustedes pueden ir marcando: Lo entend\u00ed, lo practiqu\u00e9, a medida que avanzan. Arriba ven una barra que celebra el progreso del d\u00eda.", "Paso 5. Cuando el colegio tenga un anuncio importante, aparecer\u00e1 un mensaje al abrir el d\u00eda. L\u00e9anlo, toquen Entendido, y siguen viendo la agenda.", "Paso 6. Si tienen m\u00e1s de un hijo en el colegio, toquen el nombre que aparece arriba. Ver\u00e1n la opci\u00f3n Agregar otro hijo. Pegan el c\u00f3digo del segundo hijo y listo: cambian entre ellos con un toque.", "Paso 7. Para tener la agenda como app en su celular: en iPhone, abran Safari, toquen el bot\u00f3n de compartir y elijan A\u00f1adir a pantalla de inicio. En Android, abran Chrome, toquen los tres puntos y elijan Instalar aplicaci\u00f3n.", "Paso 8. \u00bfTienen dudas o algo no funciona? Escr\u00edbanos por WhatsApp al n\u00famero que aparece en su comunicado. Estamos para ayudarlos.", "\u00a1Listo! Ya saben usar la NAS Agenda Escolar. Gracias por acompa\u00f1ar el d\u00eda a d\u00eda acad\u00e9mico de sus hijos. \u00a1Bienvenidos a esta nueva etapa!"];
+const MOCKUPS = {"splash": "<div class=\"m-splash\"><div class=\"m-shield-bg m-shield-xl\"></div><div class=\"m-splash-title\"><b>NAS</b> \u00b7 Agenda Escolar</div><div class=\"m-splash-sub\">Nuevo Colegio La Academia</div></div>", "login": "<div class=\"m-screen\"><div class=\"m-band\"><div class=\"m-shield-bg m-shield-sm\"></div><div class=\"m-bt\"><b>NAS</b> \u00b7 Agenda Escolar</div></div><div class=\"m-tabs\"><div class=\"m-tab active\">Padre \u00b7 Parent</div><div class=\"m-tab\">Docente</div></div><div class=\"m-label\">C\u00f3digo del estudiante</div><div class=\"m-input\">NAS.juan.2nd.26</div><div class=\"m-btn\">Entrar \u00b7 Sign in</div></div>", "calendar": "<div class=\"m-screen\"><div class=\"m-band\"><div class=\"m-shield-bg m-shield-sm\"></div><div class=\"m-bt\">Junio 2026</div></div><div class=\"m-cal-grid\"><div class=\"m-cell\"><div class=\"m-dn\">15</div></div><div class=\"m-cell\"><div class=\"m-dn\">16</div><div class=\"m-pill\" style=\"background:#185FA5\">MAT</div></div><div class=\"m-cell\"><div class=\"m-dn\">17</div><div class=\"m-pill\" style=\"background:#185FA5\">MAT</div><div class=\"m-pill\" style=\"background:#A32D2D\">LAN</div></div><div class=\"m-cell\"><div class=\"m-dn\">18</div><div class=\"m-pill\" style=\"background:#3B6D11\">SCI</div></div><div class=\"m-cell\"><div class=\"m-dn\">19</div><div class=\"m-pill\" style=\"background:#185FA5\">MAT</div></div><div class=\"m-cell sel\"><div class=\"m-dn\">22</div><div class=\"m-pill\" style=\"background:#185FA5\">MAT</div><div class=\"m-pill\" style=\"background:#A32D2D\">LAN</div></div><div class=\"m-cell\"><div class=\"m-today\">23</div></div><div class=\"m-cell\"><div class=\"m-dn\">24</div></div><div class=\"m-cell\"><div class=\"m-dn\">25</div></div><div class=\"m-cell\"><div class=\"m-dn\">26</div></div></div></div>", "day": "<div class=\"m-screen\"><div class=\"m-day-h\">Lunes \u00b7 22 de junio</div><div class=\"m-class blue\"><div class=\"m-cs\">\u25cf MATH</div><div class=\"m-ct\">Multiplicaci\u00f3n por 2 cifras</div></div><div class=\"m-class red\"><div class=\"m-cs\">\u25cf LANGUAGE ARTS</div><div class=\"m-ct\">Sustantivos propios y comunes</div></div><div class=\"m-class green\"><div class=\"m-cs\">\u25cf SCIENCE</div><div class=\"m-ct\">El ciclo del agua</div></div></div>", "ruta": "<div class=\"m-screen\"><div class=\"m-ruta-t\">\ud83d\ude80 Ruta del Conocimiento</div><div class=\"m-ruta-c\">3/5</div><div class=\"m-bar\"><div class=\"m-bar-f\"></div></div><div class=\"m-msg\">\u2b50 A mitad de camino, \u00a1sigue!</div><div class=\"m-class blue\"><div class=\"m-cs\">\u25cf MATH</div><div class=\"m-check done\">\u2713 Lo entend\u00ed</div></div><div class=\"m-class red\"><div class=\"m-cs\">\u25cf LANG ARTS</div><div class=\"m-check done\">\u2713 Lo practiqu\u00e9</div></div></div>", "news": "<div class=\"m-news\"><div class=\"m-news-h\">\ud83d\udcf0 Novedades de hoy</div><div class=\"m-news-card\"><div class=\"m-news-type\">\ud83d\udcc5 Evento</div><div class=\"m-news-title\">Semana de la Familia</div><div class=\"m-news-body\">Los invitamos a la Semana de la Familia. Habr\u00e1 talleres y sorpresas.</div></div><div class=\"m-news-btn\">Entendido</div></div>", "switcher": "<div class=\"m-screen\"><div class=\"m-band\"><div class=\"m-shield-bg m-shield-sm\"></div><div class=\"m-bt\">NAS \u00b7 Agenda</div></div><div class=\"m-chip\">Juan \u00b7 2\u00b0 Grade \u25be<span class=\"m-badge\">2</span></div><div class=\"m-menu\"><div class=\"m-mi active\">Juan Pablo \u00b7 2\u00b0 \u2713</div><div class=\"m-mi\">Mar\u00eda Camila \u00b7 4\u00b0</div><div class=\"m-mi add\">+ Agregar otro hijo</div></div></div>", "install": "<div class=\"m-install\"><div class=\"m-install-row\"><div class=\"m-install-icon\">\ud83d\udcf1</div><div><div class=\"m-install-t\">iPhone (Safari)</div><div class=\"m-install-s\">\u2b06 \u2192 \"A\u00f1adir a pantalla de inicio\"</div></div></div><div class=\"m-install-row\"><div class=\"m-install-icon\">\ud83e\udd16</div><div><div class=\"m-install-t\">Android (Chrome)</div><div class=\"m-install-s\">\u22ee \u2192 \"Instalar aplicaci\u00f3n\"</div></div></div><div class=\"m-install-foot\">Quedar\u00e1 como app, con el escudo del colegio.</div></div>", "support": "<div class=\"m-support\"><div class=\"m-support-icon\">\ud83d\udcac</div><div class=\"m-support-t\">WhatsApp Coordinaci\u00f3n</div><div class=\"m-support-p\">+57 302 396 0239</div><div class=\"m-support-s\">Cualquier duda, estamos para ayudarte</div></div>", "outro": "<div class=\"m-splash\"><div class=\"m-shield-bg m-shield-lg\"></div><div class=\"m-splash-title\"><b>NAS</b> \u00b7 Agenda Escolar</div><div class=\"m-outro-tag\">El d\u00eda de tus hijos,<br>en tus manos</div></div>"};
+
+let current = 0;
+let voiceOn = true;
+let currentUtter = null;
+let availableVoices = [];
+let selectedVoice = null;
+let started = false;
+
+const stage = document.getElementById("stage");
+const stepLabel = document.getElementById("step-label");
+const progressF = document.getElementById("progress-f");
+const dotsEl = document.getElementById("dots");
+const btnPrev = document.getElementById("btn-prev");
+const btnNext = document.getElementById("btn-next");
+const btnVoice = document.getElementById("btn-voice");
+const btnRestart = document.getElementById("btn-restart");
+const nowSpeaking = document.getElementById("now-speaking");
+const voiceSel = document.getElementById("voice-sel");
+
+const VOICE_PRIORITY = ["es-MX","es-US","es-CO","es-AR","es-CL","es-PE","es-VE","es-EC","es-UY","es-PY","es-BO","es-CR","es-PA","es-DO","es-GT","es-HN","es-NI","es-SV","es-PR","es-419","es-LA"];
+const VOICE_LAST_RESORT = ["es-ES","es"];
+
+function pickBestVoice(voices){
+  for (const lang of VOICE_PRIORITY) {
+    const v = voices.find(x => x.lang && x.lang.toLowerCase() === lang.toLowerCase());
+    if (v) return v;
+  }
+  const latina = voices.find(v => {
+    const n = (v.name||"").toLowerCase();
+    const l = (v.lang||"").toLowerCase();
+    return (n.includes("spanish") || n.includes("español") || l.startsWith("es")) && !n.includes("spain") && !l.startsWith("es-es");
+  });
+  if (latina) return latina;
+  for (const lang of VOICE_LAST_RESORT) {
+    const v = voices.find(x => x.lang && x.lang.toLowerCase().startsWith(lang.toLowerCase()));
+    if (v) return v;
+  }
+  return null;
+}
+
+function loadVoices(){
+  availableVoices = speechSynthesis.getVoices().filter(v => (v.lang && v.lang.toLowerCase().startsWith("es")) || (v.name||"").toLowerCase().includes("spanish") || (v.name||"").toLowerCase().includes("español"));
+  if (availableVoices.length === 0) return;
+  availableVoices.sort((a,b) => {
+    const la = (a.lang||"").toLowerCase(), lb = (b.lang||"").toLowerCase();
+    const ia = VOICE_PRIORITY.findIndex(p => p.toLowerCase() === la);
+    const ib = VOICE_PRIORITY.findIndex(p => p.toLowerCase() === lb);
+    const pa = ia >= 0 ? ia : (la === "es-es" ? 999 : 500);
+    const pb = ib >= 0 ? ib : (lb === "es-es" ? 999 : 500);
+    return pa - pb;
+  });
+  voiceSel.innerHTML = availableVoices.map((v,i) => {
+    const country = (v.lang||"").split("-")[1] || "";
+    const label = (v.name||"Voz") + (country ? " ("+country+")" : "");
+    return '<option value="'+i+'">'+label+'</option>';
+  }).join("");
+  if (!selectedVoice) {
+    selectedVoice = pickBestVoice(availableVoices);
+    if (selectedVoice) {
+      const idx = availableVoices.indexOf(selectedVoice);
+      if (idx >= 0) voiceSel.value = idx;
+    }
+  }
+}
+
+voiceSel.addEventListener("change", () => {
+  selectedVoice = availableVoices[parseInt(voiceSel.value)];
+  if (voiceOn && started) speak(NARRATIONS[current]);
+});
+
+function speak(text){
+  if(!voiceOn || !("speechSynthesis" in window)) return;
+  if(currentUtter) speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "es-MX";
+  u.rate = 0.94;
+  u.pitch = 1.0;
+  u.volume = 1;
+  if (selectedVoice) {
+    u.voice = selectedVoice;
+    u.lang = selectedVoice.lang;
+  }
+  u.onstart = () => nowSpeaking.classList.add("show");
+  u.onend = () => nowSpeaking.classList.remove("show");
+  u.onerror = () => nowSpeaking.classList.remove("show");
+  currentUtter = u;
+  speechSynthesis.speak(u);
+}
+
+function renderDots(){
+  dotsEl.innerHTML = SLIDES.map((_,i) => {
+    let cls = "dot";
+    if (i === current) cls += " active";
+    else if (i < current) cls += " done";
+    return '<span class="'+cls+'"></span>';
+  }).join("");
+}
+
+function render(){
+  const s = SLIDES[current];
+  stepLabel.textContent = s.step;
+  progressF.style.width = ((current + 1) / SLIDES.length * 100) + "%";
+  renderDots();
+  stage.innerHTML = '<h1 class="slide-title">'+s.title+'</h1><div class="slide-sub">'+s.subtitle+'</div><div class="mockup">'+(MOCKUPS[s.kind] || "")+'</div>';
+  btnPrev.disabled = (current === 0);
+  if(current === SLIDES.length - 1) {
+    btnNext.textContent = "Reiniciar ↺";
+    btnNext.classList.add("restart");
+  } else {
+    btnNext.textContent = "Siguiente →";
+    btnNext.classList.remove("restart");
+  }
+  speak(NARRATIONS[current]);
+}
+
+btnNext.addEventListener("click", () => {
+  if(current === SLIDES.length - 1) current = 0;
+  else current++;
+  render();
+});
+btnPrev.addEventListener("click", () => { if(current > 0){ current--; render(); } });
+btnRestart.addEventListener("click", () => { current = 0; render(); });
+btnVoice.addEventListener("click", () => {
+  voiceOn = !voiceOn;
+  btnVoice.classList.toggle("active", voiceOn);
+  btnVoice.textContent = voiceOn ? "🔊" : "🔇";
+  if(!voiceOn && currentUtter) speechSynthesis.cancel();
+  if(voiceOn && started) speak(NARRATIONS[current]);
+});
+
+if("speechSynthesis" in window){
+  loadVoices();
+  speechSynthesis.onvoiceschanged = () => loadVoices();
+}
+
+function startTutorial(){
+  if (started) return;
+  started = true;
+  try {
+    const warm = new SpeechSynthesisUtterance(" ");
+    warm.volume = 0;
+    speechSynthesis.speak(warm);
+  } catch(e){}
+  document.getElementById("start-splash").classList.add("hidden");
+  setTimeout(() => render(), 250);
+}
+
+document.getElementById("start-btn").addEventListener("click", startTutorial);
+document.getElementById("start-splash").addEventListener("click", startTutorial);
+
+renderDots();
+progressF.style.width = "0%";
+</script></body></html>
